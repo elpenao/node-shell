@@ -1,0 +1,14 @@
+{
+  "name": "node-shell",
+  "version": "0.0.0",
+  "description": "",
+  "main": "bash.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.67.0"
+  }
+}
