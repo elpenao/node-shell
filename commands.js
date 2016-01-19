@@ -18,7 +18,7 @@ var commands = {
 		  var output = "";
 		  files.forEach(function(file) {
 		    output += (file.toString() + "\n");
-		  })
+		  });
 		  commands.done(output);
 		});
 	},
@@ -30,7 +30,7 @@ var commands = {
 		fs.readFile('./' + file, 'utf8', function(err, file) {
 		  if (err) throw err;
 		  if(otherComms.length === 0) {
-		  	commands.done(file.toString() + "\n")
+		  	commands.done(file.toString() + "\n");
 		  }else{
 		  	var firstComm = otherComms.shift();
 			commands.checkInput(firstComm, otherComms, file.toString() + "\n");
@@ -62,7 +62,7 @@ var commands = {
 			});
 		}
 	},
-	tail: function (ile, otherComms, stdin) {
+	tail: function (file, otherComms, stdin) {
 		// fs.readFile(commands.pwd() + )
 		if(stdin){
 			var lines = stdin.split("\n");
@@ -104,7 +104,7 @@ var commands = {
 		if(stdin){
 			var lines = stdin.split("\n");
 			if(otherComms.length === 0){
-			    console.log(lines.length) // Show the HTML for the Google homepage.
+			    console.log(lines.length);
 			    commands.showPrompt();
 			} else{
 				var firstComm = otherComms.shift();
@@ -138,24 +138,36 @@ var commands = {
 		request(url, function (error, response, body) {
 		  if (!error && response.statusCode == 200) {
 		  	if(!otherComms.length){
-			    console.log(body) // Show the HTML for the Google homepage.
+			    console.log(body);
 			    commands.showPrompt();
 			}else{
 				var firstComm = otherComms.shift();
 				commands.checkInput(firstComm, otherComms, body);
 			}
 		  }
-		})
+		});
 	},
-	// grep: function (cmd, otherComms, stdin) {
-	// 	var lines = stdin.split("\n");
-	// 	for (var i = 0; i < lines.length; i++) {
-	// 		lines[i]
-	// 	};
 
-	// 	var regexstring = "whatever";
-	// 	var regexp = new RegExp(regexstring, "gi");
-	// },
+	grep: function (cmd, otherComms, stdin) {
+		var word = cmd.slice(cmd.indexOf(" ") + 1);
+		var lines = stdin.split("\n");
+		var found = [];
+		for (var i = 0; i < lines.length; i++) {
+			if (lines[i].indexOf(word) > -1) found.push(lines[i]);
+		}
+		if(stdin){
+			if(otherComms.length === 0){
+			    console.log(found.join("\n"));
+			    commands.showPrompt();
+			} else{
+				var firstComm = otherComms.shift();
+				commands.checkInput(firstComm, otherComms, found.join("\n"));
+			}
+		}else{
+			console.log(found.join("\n"));
+			commands.showPrompt();
+		}
+	},
 
 	checkInput: function(cmd, otherComms, stdin){
 		if (cmd.indexOf('|') > -1) {
@@ -167,6 +179,7 @@ var commands = {
 	  		if (cmd === 'date') commands.date();
 	  		if (cmd === 'ls') commands.ls();
 	  		if (cmd.indexOf('echo') > -1) commands.echo(cmd, otherComms, stdin);
+	  		if (cmd.indexOf('grep') > -1) commands.grep(cmd, otherComms, stdin);
 	  		if (cmd.indexOf('curl') > -1) commands.curl(cmd, otherComms, stdin);
 	  		if (cmd.indexOf('cat') > -1) commands.cat(cmd.slice(cmd.indexOf(" ") + 1), otherComms, stdin);
 	  		if (cmd.indexOf('head') > -1) commands.head(cmd.slice(cmd.indexOf(" ") + 1), otherComms, stdin);
@@ -176,6 +189,6 @@ var commands = {
 		}
 		
 	}
-} 
+};
 
 module.exports = commands;
